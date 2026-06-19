@@ -15,6 +15,16 @@
                     <flux:sidebar.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>
                         {{ __('Dashboard') }}
                     </flux:sidebar.item>
+
+                    @if(auth()->user()->role === 'admin')
+                        <flux:sidebar.item icon="layout-grid" :href="route('admin.categories')" :current="request()->routeIs('admin.categories')" wire:navigate>
+                            {{ __('Kategori') }}
+                        </flux:sidebar.item>
+                        
+                        <flux:sidebar.item icon="wrench" :href="route('admin.services')" :current="request()->routeIs('admin.services')" wire:navigate>
+                            {{ __('Jasa Service') }}
+                        </flux:sidebar.item>
+                    @endif
                 </flux:sidebar.group>
             </flux:sidebar.nav>
 
@@ -33,7 +43,6 @@
             <x-desktop-user-menu class="hidden lg:block" :name="auth()->user()->name" />
         </flux:sidebar>
 
-        <!-- Mobile User Menu -->
         <flux:header class="lg:hidden">
             <flux:sidebar.toggle class="lg:hidden" icon="bars-2" inset="left" />
 

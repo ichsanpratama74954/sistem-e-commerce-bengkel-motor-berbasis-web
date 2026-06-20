@@ -18,11 +18,11 @@
 
                     @if(auth()->user()->role === 'admin')
                         <flux:sidebar.item icon="layout-grid" :href="route('admin.categories')" :current="request()->routeIs('admin.categories')" wire:navigate>
-                            {{ __('Kategori') }}
+                            {{ __('Category') }}
                         </flux:sidebar.item>
                         
                         <flux:sidebar.item icon="wrench" :href="route('admin.services')" :current="request()->routeIs('admin.services')" wire:navigate>
-                            {{ __('Jasa Service') }}
+                            {{ __('Service') }}
                         </flux:sidebar.item>
                     @endif
                 </flux:sidebar.group>

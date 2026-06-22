@@ -16,12 +16,15 @@
                         {{ __('Dashboard') }}
                     </flux:sidebar.item>
 
+                    {{-- Menu Khusus Admin untuk Manajemen Data --}}
                     @if(auth()->user()->role === 'admin')
-                        <flux:sidebar.item icon="layout-grid" :href="route('admin.categories')" :current="request()->routeIs('admin.categories')" wire:navigate>
+                        <flux:separator class="my-2" />
+                        
+                        <flux:sidebar.item icon="folder" :href="route('category.index')" :current="request()->routeIs('category.index')" wire:navigate>
                             {{ __('Category') }}
                         </flux:sidebar.item>
                         
-                        <flux:sidebar.item icon="wrench" :href="route('admin.services')" :current="request()->routeIs('admin.services')" wire:navigate>
+                        <flux:sidebar.item icon="wrench" :href="route('service.index')" :current="request()->routeIs('service.index')" wire:navigate>
                             {{ __('Service') }}
                         </flux:sidebar.item>
                     @endif

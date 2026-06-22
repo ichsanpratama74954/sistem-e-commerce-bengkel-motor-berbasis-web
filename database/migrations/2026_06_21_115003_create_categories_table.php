@@ -10,21 +10,20 @@ return new class extends Migration
      * Run the migrations.
      */
     public function up(): void
-{
-    Schema::create('services', function (Blueprint $table) {
-        $table->id();
-        $table->string('service_name');
-        $table->text('description')->nullable(); 
-        $table->decimal('service_price', 10, 2);
-        $table->timestamps();
-    });
-}
+    {
+        Schema::create('categories', function (Blueprint $table) {
+            $table->id();
+            $table->string('name')->unique();
+            $table->text('description')->nullable();
+            $table->timestamps();
+        });
+    }
 
     /**
      * Reverse the migrations.
      */
     public function down(): void
     {
-        Schema::dropIfExists('services');
+        Schema::dropIfExists('categories');
     }
 };

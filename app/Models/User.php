@@ -15,6 +15,9 @@ use Laravel\Fortify\Contracts\PasskeyUser;
 use Laravel\Fortify\PasskeyAuthenticatable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 
+// TAMBAHKAN INI
+use App\Models\Motorcycle;
+
 /**
  * @property int $id
  * @property string $name
@@ -58,5 +61,13 @@ class User extends Authenticatable implements PasskeyUser
             ->take(2)
             ->map(fn ($word) => Str::substr($word, 0, 1))
             ->implode('');
+    }
+
+    /**
+     * Relasi User -> Motorcycles
+     */
+    public function motorcycles()
+    {
+        return $this->hasMany(Motorcycle::class);
     }
 }

@@ -27,6 +27,8 @@
                         <flux:sidebar.item icon="wrench" :href="route('service.index')" :current="request()->routeIs('service.index')" wire:navigate>
                             {{ __('Service') }}
                         </flux:sidebar.item>
+
+                        <flux:navlist.item icon="wrench" href="{{ route('motorcycle.index') }}">Motorcycles</flux:navlist.item>
                     @endif
                 </flux:sidebar.group>
             </flux:sidebar.nav>

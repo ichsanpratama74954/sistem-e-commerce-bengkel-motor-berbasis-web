@@ -16,11 +16,12 @@
                         {{ __('Dashboard') }}
                     </flux:sidebar.item>
 
-                    {{-- Menu Khusus Admin untuk Manajemen Data --}}
+                    <flux:sidebar.item icon="shopping-bag" :href="route('orders.index')" :current="request()->routeIs('orders.index')" wire:navigate>
+                        {{ __('Orders') }}
+                    </flux:sidebar.item>
+
                     @if(auth()->user()->role === 'admin')
-                        <flux:separator class="my-2" />
-                        
-                        <flux:sidebar.item icon="folder" :href="route('category.index')" :current="request()->routeIs('category.index')" wire:navigate>
+                        <flux:sidebar.item icon="folder" :href="route('category.index')" :current="request()->routeIs('category.index')" wire:navigate class="mt-2">
                             {{ __('Category') }}
                         </flux:sidebar.item>
                         
@@ -28,7 +29,9 @@
                             {{ __('Service') }}
                         </flux:sidebar.item>
 
-                        <flux:navlist.item icon="wrench" href="{{ route('motorcycle.index') }}">Motorcycles</flux:navlist.item>
+                        <flux:sidebar.item icon="truck" :href="route('motorcycle.index')" :current="request()->routeIs('motorcycle.index')" wire:navigate>
+                            {{ __('Motorcycles') }}
+                        </flux:sidebar.item>
                     @endif
                 </flux:sidebar.group>
             </flux:sidebar.nav>

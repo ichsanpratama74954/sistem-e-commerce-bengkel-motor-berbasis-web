@@ -32,7 +32,9 @@
                             {{ __('Orders') }}
                         </flux:sidebar.item>
 
-                        <flux:navlist.item icon="wrench" href="{{ route('motorcycle.index') }}">Motorcycles</flux:navlist.item>
+                        <flux:sidebar.item icon="wrench" :href="route('motorcycle.index')" :current="request()->routeIs('motorcycle.index')" wire:navigate>
+                            {{ __('Motorcycles') }}
+                        </flux:sidebar.item>
                     @endif
                 </flux:sidebar.group>
             </flux:sidebar.nav>

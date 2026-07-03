@@ -35,6 +35,10 @@
                         <flux:sidebar.item icon="wrench" :href="route('motorcycle.index')" :current="request()->routeIs('motorcycle.index')" wire:navigate>
                             {{ __('Motorcycles') }}
                         </flux:sidebar.item>
+
+                        <flux:sidebar.item icon="calendar" :href="route('booking.index')" :current="request()->routeIs('booking.index')" wire:navigate>
+                            {{ __('Bookings') }}
+                        </flux:sidebar.item>
                     @endif
                 </flux:sidebar.group>
             </flux:sidebar.nav>

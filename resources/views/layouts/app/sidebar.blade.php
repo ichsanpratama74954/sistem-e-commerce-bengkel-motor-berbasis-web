@@ -23,6 +23,11 @@
                         <flux:sidebar.item icon="folder" :href="route('category.index')" :current="request()->routeIs('category.index')" wire:navigate>
                             {{ __('Category') }}
                         </flux:sidebar.item>
+
+                        {{-- MENU SPAREPARTS BARU --}}
+                        <flux:sidebar.item icon="cube" :href="route('sparepart.index')" :current="request()->routeIs('sparepart.index')" wire:navigate>
+                            {{ __('Spareparts') }}
+                        </flux:sidebar.item>
                         
                         <flux:sidebar.item icon="wrench" :href="route('service.index')" :current="request()->routeIs('service.index')" wire:navigate>
                             {{ __('Service') }}

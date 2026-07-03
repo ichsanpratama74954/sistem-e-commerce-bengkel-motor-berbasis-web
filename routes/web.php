@@ -11,6 +11,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::livewire('/motorcycles', 'pages::motorcycle.index')->name('motorcycle.index');
     Route::livewire('/orders', 'pages::orders.index')->name('order.index');
     Route::livewire('/bookings', 'pages::booking.index')->name('booking.index');
+    Route::livewire('/spareparts', 'pages::sparepart.index')->name('sparepart.index');
 });
 
 require __DIR__.'/settings.php';

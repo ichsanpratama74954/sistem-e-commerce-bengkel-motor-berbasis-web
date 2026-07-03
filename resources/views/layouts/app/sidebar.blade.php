@@ -24,7 +24,6 @@
                             {{ __('Category') }}
                         </flux:sidebar.item>
 
-                        {{-- MENU SPAREPARTS BARU --}}
                         <flux:sidebar.item icon="cube" :href="route('sparepart.index')" :current="request()->routeIs('sparepart.index')" wire:navigate>
                             {{ __('Spareparts') }}
                         </flux:sidebar.item>
@@ -43,6 +42,10 @@
 
                         <flux:sidebar.item icon="calendar" :href="route('booking.index')" :current="request()->routeIs('booking.index')" wire:navigate>
                             {{ __('Bookings') }}
+                        </flux:sidebar.item>
+
+                        <flux:sidebar.item icon="credit-card" :href="route('payment.index')" :current="request()->routeIs('payment.index')" wire:navigate>
+                            {{ __('Payments') }}
                         </flux:sidebar.item>
                     @endif
                 </flux:sidebar.group>

@@ -2,6 +2,7 @@
 
 use Livewire\Component;
 use Livewire\Attributes\Computed;
+use Livewire\Attributes\On;
 use Livewire\WithPagination;
 use App\Models\Order;
 use App\Models\User;
@@ -149,6 +150,7 @@ new class extends Component
         $this->redirectRoute('order.index', navigate: true);
     }
 
+    #[On('edit-order')]
     public function loadOrder($id)
     {
         $order = Order::with('orderDetails')->findOrFail($id);
@@ -199,6 +201,7 @@ new class extends Component
         $this->redirectRoute('order.index', navigate: true);
     }
 
+    #[On('confirm-delete')]
     public function deleteOrder($id)
     {
         $order = Order::findOrFail($id);

@@ -52,6 +52,7 @@ new class extends Component
                 <flux:table.columns class="bg-emerald-600 dark:bg-emerald-900 border-b border-emerald-700">
                     <flux:table.column class="text-white font-bold text-sm bg-emerald-600 dark:bg-emerald-900">No</flux:table.column>
                     <flux:table.column class="text-white font-bold text-sm bg-emerald-600 dark:bg-emerald-900">Name</flux:table.column>
+                    <flux:table.column class="text-white font-bold text-sm bg-emerald-600 dark:bg-emerald-900">Slug</flux:table.column>
                     <flux:table.column class="text-white font-bold text-sm bg-emerald-600 dark:bg-emerald-900">Description</flux:table.column>
                     <flux:table.column class="text-white font-bold text-sm bg-emerald-600 dark:bg-emerald-900">Created At</flux:table.column>
                     <flux:table.column class="text-white font-bold text-sm bg-emerald-600 dark:bg-emerald-900">action</flux:table.column>
@@ -70,6 +71,10 @@ new class extends Component
                                     <span class="w-2 h-2 rounded-full bg-emerald-500 shrink-0"></span>
                                     <span>{{ $category->name }}</span>
                                 </div>
+                            </flux:table.cell>
+
+                            <flux:table.cell>
+                                <code class="text-xs bg-zinc-100 dark:bg-zinc-800 px-2 py-1 rounded">{{ $category->slug }}</code>
                             </flux:table.cell>
 
                             <flux:table.cell>

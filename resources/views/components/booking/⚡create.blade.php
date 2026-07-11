@@ -7,8 +7,7 @@ use App\Models\Motorcycle;
 use App\Models\Service;
 use App\Models\Sparepart;
 
-new class extends Component
-{
+new class extends Component {
     public BookingForm $form;
     public $users = [];
     public $motorcycles = [];
@@ -101,14 +100,16 @@ new class extends Component
                 <flux:select label="User" wire:model="form.user_id">
                     <flux:select.option value="">Select User</flux:select.option>
                     @foreach($users as $user)
-                        <flux:select.option value="{{ $user->id }}">{{ $user->name }} ({{ $user->email }})</flux:select.option>
+                        <flux:select.option value="{{ $user->id }}">{{ $user->name }} ({{ $user->email }})
+                        </flux:select.option>
                     @endforeach
                 </flux:select>
 
                 <flux:select label="Motorcycle" wire:model="form.motorcycle_id">
                     <flux:select.option value="">Select Motorcycle</flux:select.option>
                     @foreach($motorcycles as $motorcycle)
-                        <flux:select.option value="{{ $motorcycle->id }}">{{ $motorcycle->brand }} {{ $motorcycle->model }} - {{ $motorcycle->plate_number }}</flux:select.option>
+                        <flux:select.option value="{{ $motorcycle->id }}">{{ $motorcycle->brand }} {{ $motorcycle->model }}
+                            - {{ $motorcycle->plate_number }}</flux:select.option>
                     @endforeach
                 </flux:select>
 
@@ -124,10 +125,12 @@ new class extends Component
 
                 <flux:heading size="sm">Services</flux:heading>
                 <div class="flex items-end gap-2">
-                    <flux:select class="flex-1" wire:model="new_service_id" placeholder="Select service...">
+                    <flux:select wire:model="new_service_id" placeholder="Select service...">
                         <flux:select.option value="">Select Service</flux:select.option>
                         @foreach($services as $service)
-                            <flux:select.option value="{{ $service->id }}">{{ $service->service_name }} (Rp {{ number_format($service->service_price, 0, ',', '.') }})</flux:select.option>
+                            <flux:select.option value="{{ $service->id }}">{{ $service->service_name }} (Rp
+                                {{ number_format($service->service_price, 0, ',', '.') }})
+                            </flux:select.option>
                         @endforeach
                     </flux:select>
                     <flux:input type="number" class="w-20" min="1" value="1" wire:model="new_service_qty" />
@@ -137,9 +140,11 @@ new class extends Component
                     <div class="space-y-1">
                         @foreach($form->selected_services as $i => $item)
                             @php $s = $services->firstWhere('id', $item['id']); @endphp
-                            <div class="flex items-center justify-between bg-zinc-50 dark:bg-zinc-800 px-3 py-2 rounded-lg text-sm">
+                            <div
+                                class="flex items-center justify-between bg-zinc-50 dark:bg-zinc-800 px-3 py-2 rounded-lg text-sm">
                                 <span>{{ $s?->service_name ?? 'Unknown' }} x{{ $item['quantity'] }}</span>
-                                <button type="button" wire:click="removeService({{ $i }})" class="text-red-500 hover:text-red-700">&times;</button>
+                                <button type="button" wire:click="removeService({{ $i }})"
+                                    class="text-red-500 hover:text-red-700">&times;</button>
                             </div>
                         @endforeach
                     </div>
@@ -149,10 +154,12 @@ new class extends Component
 
                 <flux:heading size="sm">Spareparts</flux:heading>
                 <div class="flex items-end gap-2">
-                    <flux:select class="flex-1" wire:model="new_sparepart_id" placeholder="Select sparepart...">
+                    <flux:select wire:model="new_sparepart_id" placeholder="Select sparepart...">
                         <flux:select.option value="">Select Sparepart</flux:select.option>
                         @foreach($spareparts as $sp)
-                            <flux:select.option value="{{ $sp->id }}">{{ $sp->part_name }} (Rp {{ number_format($sp->price, 0, ',', '.') }})</flux:select.option>
+                            <flux:select.option value="{{ $sp->id }}">{{ $sp->part_name }} (Rp
+                                {{ number_format($sp->price, 0, ',', '.') }})
+                            </flux:select.option>
                         @endforeach
                     </flux:select>
                     <flux:input type="number" class="w-20" min="1" value="1" wire:model="new_sparepart_qty" />
@@ -162,9 +169,11 @@ new class extends Component
                     <div class="space-y-1">
                         @foreach($form->selected_spareparts as $i => $item)
                             @php $sp = $spareparts->firstWhere('id', $item['id']); @endphp
-                            <div class="flex items-center justify-between bg-zinc-50 dark:bg-zinc-800 px-3 py-2 rounded-lg text-sm">
+                            <div
+                                class="flex items-center justify-between bg-zinc-50 dark:bg-zinc-800 px-3 py-2 rounded-lg text-sm">
                                 <span>{{ $sp?->part_name ?? 'Unknown' }} x{{ $item['quantity'] }}</span>
-                                <button type="button" wire:click="removeSparepart({{ $i }})" class="text-red-500 hover:text-red-700">&times;</button>
+                                <button type="button" wire:click="removeSparepart({{ $i }})"
+                                    class="text-red-500 hover:text-red-700">&times;</button>
                             </div>
                         @endforeach
                     </div>

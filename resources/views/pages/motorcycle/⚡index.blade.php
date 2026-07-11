@@ -14,79 +14,138 @@ new class extends Component
     {
         return Motorcycle::with('user')->latest()->paginate(10);
     }
+
+    #[Computed]
+    public function totalMotorcycles()
+    {
+        return Motorcycle::count();
+    }
 };
 ?>
 
-<div class="max-w-7xl mx-auto space-y-4">
-    <flux:heading size="xl" class="text-zinc-800 dark:text-white">Motorcycles</flux:heading>
-    <flux:subheading size="lg" class="text-zinc-600 dark:text-zinc-400">Manage your motorcycles</flux:subheading>
-    <flux:separator variant="subtle" />
-    
-    <flux:modal.trigger name="create-motorcycle">
-        <flux:button variant="primary" icon="plus" color="primary">Add Motorcycle</flux:button>
-    </flux:modal.trigger>
+<div class="max-w-7xl mx-auto space-y-6 container pb-12 px-4">
+    {{-- HEADER UTAMA --}}
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-zinc-200 dark:border-zinc-800 pb-5">
+        <div>
+            <flux:heading size="xl" class="text-zinc-900 dark:text-white font-black tracking-tight">Motorcyles</flux:heading>
+            <flux:subheading size="sm" class="text-zinc-500 dark:text-zinc-400 mt-1">Manage corporate vehicles, client ownership profiles, and license plates.</flux:subheading>
+        </div>
+        
+        <flux:modal.trigger name="create-motorcycle">
+            <flux:button variant="primary" icon="plus" size="sm" class="w-full sm:w-auto font-bold shadow-xs bg-emerald-600 hover:bg-emerald-700 border-emerald-600 text-white">Add Motorcycle</flux:button>
+        </flux:modal.trigger>
+    </div>
 
     <livewire:motorcycle.create />
     <livewire:motorcycle.edit :key="'edit-motorcycle-modal'" /> 
     <x-flash-message />
 
-    {{-- table --}}
-    <div class="overflow-x-auto">
-       <flux:table :paginate="$this->motorcycles->hasPages()" :pagination="$this->motorcycles" class="w-full">
-            <flux:table.columns>
-                <flux:table.column>No</flux:table.column>
-                <flux:table.column>Owner</flux:table.column>
-                <flux:table.column>Brand</flux:table.column>
-                <flux:table.column>Model</flux:table.column>
-                <flux:table.column>Plate Number</flux:table.column>
-                <flux:table.column>Created At</flux:table.column>
-                <flux:table.column>Actions</flux:table.column>
-                <flux:table.column></flux:table.column>
-            </flux:table.columns>
+    {{-- DESAIN BARU: HORIZONTAL STATS TOP BAR (Beda Total dari Layout Orders/Payments) --}}
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div class="bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-xl p-4 flex items-center justify-between shadow-3xs">
+            <div>
+                <p class="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Active Fleet</p>
+                <p class="text-2xl font-black text-zinc-900 dark:text-white mt-1">{{ $this->totalMotorcycles }} <span class="text-xs font-normal text-zinc-400">Units</span></p>
+            </div>
+            <div class="p-2.5 bg-emerald-50 dark:bg-emerald-950/40 rounded-lg text-emerald-600 dark:text-emerald-400">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 18.75a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 0 1-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h1.125c.621 0 1.129-.504 1.129-1.125v-3.07m-1.5 4.5V14.25m-16.5 0h16.5M3.75 14.25h16.5M4.5 10.5h15M5.25 6.75h13.5" />
+                </svg>
+            </div>
+        </div>
 
-            <flux:table.rows>
-                @foreach ($this->motorcycles as $motorcycle)
-                    <flux:table.row :key="$motorcycle->id">
-                        <flux:table.cell class="font-medium">
-                            {{ $loop->iteration }}
-                        </flux:table.cell>
+        <div class="bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-xl p-4 flex items-center justify-between shadow-3xs">
+            <div>
+                <p class="text-[10px] font-bold uppercase tracking-widest text-zinc-400">System Status</p>
+                <p class="text-sm font-bold text-emerald-600 dark:text-emerald-400 mt-2.5 flex items-center gap-1.5">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 inline-block animate-pulse"></span> Synchronized
+                </p>
+            </div>
+        </div>
 
-                        <flux:table.cell class="font-medium">
-                            {{ $motorcycle->user->name ?? '-' }}
-                        </flux:table.cell>
+        <div class="bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-xl p-4 flex items-center justify-between shadow-3xs">
+            <div>
+                <p class="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Quick Search</p>
+                <p class="text-xs text-zinc-400 mt-2 leading-relaxed">Press <kbd class="px-1 py-0.5 bg-zinc-200 dark:bg-zinc-800 rounded text-[10px]">Ctrl</kbd> + <kbd class="px-1 py-0.5 bg-zinc-200 dark:bg-zinc-800 rounded text-[10px]">F</kbd> to locate plate logs instantly.</p>
+            </div>
+        </div>
+    </div>
 
-                        <flux:table.cell class="text-zinc-500 dark:text-zinc-400">
-                            {{ $motorcycle->brand ?? '-' }}
-                        </flux:table.cell>
+    {{-- DATA CONTAINER FULL-WIDTH --}}
+    <div class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl overflow-hidden shadow-xs">
+        <div class="overflow-x-auto w-full">
+            {{-- Kunci lebar minimal agar layout tidak gepeng saat responsif --}}
+            <flux:table :paginate="$this->motorcycles->hasPages()" :pagination="$this->motorcycles" class="w-full min-w-[850px]">
+                <flux:table.columns>
+                    <flux:table.column class="text-xs font-bold text-zinc-500 w-14">No</flux:table.column>
+                    {{-- Batasi kolom Owner agar menendang kolom kanan dengan aman --}}
+                    <flux:table.column class="text-xs font-bold text-zinc-500 w-64">Owner Name</flux:table.column>
+                    <flux:table.column class="text-xs font-bold text-zinc-500 w-52">Vehicle Specs</flux:table.column>
+                    <flux:table.column class="text-xs font-bold text-zinc-500 w-44">Plate Number</flux:table.column>
+                    <flux:table.column class="text-xs font-bold text-zinc-500">Registered</flux:table.column>
+                    <flux:table.column class="w-12"></flux:table.column>
+                </flux:table.columns>
 
-                        <flux:table.cell class="text-zinc-500 dark:text-zinc-400">
-                            {{ $motorcycle->model ?? '-' }}
-                        </flux:table.cell>
+                <flux:table.rows>
+                    @foreach ($this->motorcycles as $motorcycle)
+                        <flux:table.row :key="$motorcycle->id" class="hover:bg-zinc-50 dark:hover:bg-zinc-800/40 transition-colors">
+                            
+                            {{-- No --}}
+                            <flux:table.cell class="font-bold text-zinc-400 dark:text-zinc-600 text-xs">
+                                {{ $loop->iteration }}
+                            </flux:table.cell>
 
-                        <flux:table.cell class="font-mono uppercase">
-                            {{ $motorcycle->plate_number ?? '-' }}
-                        </flux:table.cell>
+                            {{-- Owner Name (SOLUSI TABRAKAN: dibungkus ke bawah jika kepanjangan) --}}
+                            <flux:table.cell class="w-64 whitespace-normal break-words pr-6">
+                                <div class="flex flex-col">
+                                    <span class="font-bold text-zinc-950 dark:text-zinc-50 tracking-tight leading-tight">
+                                        {{ $motorcycle->user->name ?? 'No Owner Assigned' }}
+                                    </span>
+                                    <span class="text-[10px] font-medium text-zinc-400 dark:text-zinc-500 mt-0.5">
+                                        Client Account #{{ $motorcycle->user_id ?? '-' }}
+                                    </span>
+                                </div>
+                            </flux:table.cell>
 
-                        <flux:table.cell class="whitespace-nowrap">
-                            {{ $motorcycle->created_at?->diffForHumans() ?? '-' }}
-                        </flux:table.cell>
+                            {{-- Vehicle Specs (Brand & Model disatukan biar compact & clean) --}}
+                            <flux:table.cell class="w-52">
+                                <div class="flex flex-col">
+                                    <span class="font-extrabold text-zinc-900 dark:text-zinc-100 text-sm tracking-tight">
+                                        {{ $motorcycle->brand ?? '-' }}
+                                    </span>
+                                    <span class="text-xs font-medium text-zinc-500 dark:text-zinc-400 mt-0.5">
+                                        Type: {{ $motorcycle->model ?? '-' }}
+                                    </span>
+                                </div>
+                            </flux:table.cell>
 
-                        <flux:table.cell>
-                            <flux:dropdown>
-                                <flux:button variant="ghost" size="sm" icon="ellipsis-horizontal" inset="top bottom"></flux:button>
+                            {{-- Plate Number (Didesain eksklusif mirip plat kendaraan asli) --}}
+                            <flux:table.cell class="w-44 whitespace-nowrap">
+                                <span class="inline-block bg-zinc-100 dark:bg-zinc-800/80 text-zinc-900 dark:text-zinc-100 border border-zinc-300 dark:border-zinc-700 px-3 py-1 rounded-md font-mono font-black tracking-widest text-xs uppercase shadow-2xs">
+                                    {{ $motorcycle->plate_number ?? 'N/A' }}
+                                </span>
+                            </flux:table.cell>
 
-                                <flux:menu>
-                                    <flux:menu.item icon="pencil" wire:click="$dispatch('edit-motorcycle', { id: {{ $motorcycle->id }} })">Edit</flux:menu.item>
+                            {{-- Created At --}}
+                            <flux:table.cell class="whitespace-nowrap text-zinc-500 dark:text-zinc-400 font-medium text-xs">
+                                {{ $motorcycle->created_at?->diffForHumans() ?? '-' }}
+                            </flux:table.cell>
 
-                                    <flux:menu.separator />
-
-                                    <flux:menu.item variant="danger" icon="trash" wire:click="$dispatch('confirm-delete', {id: {{ $motorcycle->id }}})">Delete</flux:menu.item>
-                                </flux:menu>
-                            </flux:dropdown>
-                        </flux:table.cell>
-                    </flux:table.row>
-                @endforeach
-            </flux:table.rows>
-        </flux:table>
+                            {{-- Actions --}}
+                            <flux:table.cell>
+                                <flux:dropdown>
+                                    <flux:button variant="ghost" size="sm" icon="ellipsis-horizontal" inset="top bottom"></flux:button>
+                                    <flux:menu>
+                                        <flux:menu.item icon="pencil" wire:click="$dispatch('edit-motorcycle', { id: {{ $motorcycle->id }} })">Edit Log</flux:menu.item>
+                                        <flux:menu.separator />
+                                        <flux:menu.item variant="danger" icon="trash" wire:click="$dispatch('confirm-delete', {id: {{ $motorcycle->id }}})">Delete Record</flux:menu.item>
+                                    </flux:menu>
+                                </flux:dropdown>
+                            </flux:table.cell>
+                        </flux:table.row>
+                    @endforeach
+                </flux:table.rows>
+            </flux:table>
+        </div>
     </div>
 </div>

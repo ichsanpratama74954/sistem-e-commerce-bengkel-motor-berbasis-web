@@ -23,4 +23,9 @@ class Booking extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function motorcycle(): BelongsTo
+    {
+        return $this->belongsTo(Motorcycle::class);
+    }
 }

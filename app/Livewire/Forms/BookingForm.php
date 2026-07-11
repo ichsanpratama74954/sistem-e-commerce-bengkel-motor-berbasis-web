@@ -8,8 +8,8 @@ use Illuminate\Validation\Rule;
 
 class BookingForm extends Form
 {
-    public string $user_id = '';
-    public string $motorcycle_id = '';
+    public int $user_id = 0;
+    public int $motorcycle_id = 0;
     public string $booking_date = '';
     public string $status = 'pending';
     public ?Booking $booking = null;
@@ -25,6 +25,7 @@ class BookingForm extends Form
             'motorcycle_id' => [
                 'required',
                 'integer',
+                'exists:motorcycles,id',
             ],
             'booking_date' => [
                 'required',
@@ -57,8 +58,8 @@ class BookingForm extends Form
     public function setBooking(Booking $booking): void
     {
         $this->booking = $booking;
-        $this->user_id = (string) $booking->user_id;
-        $this->motorcycle_id = (string) $booking->motorcycle_id;
+        $this->user_id = (int) $booking->user_id;
+        $this->motorcycle_id = (int) $booking->motorcycle_id;
         $this->booking_date = $booking->booking_date;
         $this->status = $booking->status;
     }

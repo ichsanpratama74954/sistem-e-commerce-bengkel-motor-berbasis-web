@@ -13,7 +13,7 @@ new class extends Component
     #[Computed]
     public function bookings()
     {
-        return Booking::with(['user'])->latest()->paginate(10);
+        return Booking::with(['user', 'motorcycle'])->latest()->paginate(10);
     }
 
     public function edit($id){
@@ -40,8 +40,8 @@ new class extends Component
        <flux:table :paginate="$this->bookings">
             <flux:table.columns>
                 <flux:table.column>No</flux:table.column>
-                <flux:table.column>User ID</flux:table.column>
-                <flux:table.column>Motorcycle ID</flux:table.column>
+                <flux:table.column>User</flux:table.column>
+                <flux:table.column>Motorcycle</flux:table.column>
                 <flux:table.column>Booking Date</flux:table.column>
                 <flux:table.column>Status</flux:table.column>
                 <flux:table.column>Created At</flux:table.column>
@@ -63,8 +63,11 @@ new class extends Component
                             </div>
                         </flux:table.cell>
 
-                        <flux:table.cell class="text-zinc-500 dark:text-zinc-400">
-                            {{ $booking->motorcycle_id }}
+                        <flux:table.cell class="flex items-center gap-3">
+                            <div class="flex flex-col">
+                                <span class="font-medium text-zinc-800 dark:text-white">{{ $booking->motorcycle->brand ?? 'No Brand' }} {{ $booking->motorcycle->model ?? '' }}</span>
+                                <span class="text-zinc-500 dark:text-zinc-400 text-xs">{{ $booking->motorcycle->plate_number ?? 'No Plate' }}</span>
+                            </div>
                         </flux:table.cell>
 
                         <flux:table.cell class="whitespace-nowrap">

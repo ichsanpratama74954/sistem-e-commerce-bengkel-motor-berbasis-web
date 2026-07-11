@@ -2,14 +2,20 @@
 
 use Livewire\Component;
 use App\Livewire\Forms\BookingForm;
+use App\Models\User;
+use App\Models\Motorcycle;
 
 new class extends Component
 {
     public BookingForm $form;
+    public $users = [];
+    public $motorcycles = [];
     
     public function mount()
     {
         $this->form = new BookingForm($this, 'form');
+        $this->users = User::select('id', 'name', 'email')->get();
+        $this->motorcycles = Motorcycle::select('id', 'brand', 'model', 'plate_number')->get();
     }
 
     public function save()
@@ -43,19 +49,19 @@ new class extends Component
             </div>
 
             <div class="space-y-6">
-                <flux:input
-                    label="User ID"
-                    type="number"
-                    placeholder="Enter user ID (e.g., 1)"
-                    wire:model="form.user_id"
-                />
+                <flux:select label="User" wire:model="form.user_id">
+                    <flux:select.option value="">Select User</flux:select.option>
+                    @foreach($users as $user)
+                        <flux:select.option value="{{ $user->id }}">{{ $user->name }} ({{ $user->email }})</flux:select.option>
+                    @endforeach
+                </flux:select>
 
-                <flux:input
-                    label="Motorcycle ID"
-                    type="number"
-                    placeholder="Enter motorcycle ID (e.g., 3)"
-                    wire:model="form.motorcycle_id"
-                />
+                <flux:select label="Motorcycle" wire:model="form.motorcycle_id">
+                    <flux:select.option value="">Select Motorcycle</flux:select.option>
+                    @foreach($motorcycles as $motorcycle)
+                        <flux:select.option value="{{ $motorcycle->id }}">{{ $motorcycle->brand }} {{ $motorcycle->model }} - {{ $motorcycle->plate_number }}</flux:select.option>
+                    @endforeach
+                </flux:select>
 
                 <flux:input
                     label="Booking Date"

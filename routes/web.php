@@ -13,6 +13,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::livewire('/bookings', 'pages::booking.index')->name('booking.index');
     Route::livewire('/spareparts', 'pages::sparepart.index')->name('sparepart.index');
     Route::livewire('/payments', 'pages::payment.index')->name('payment.index');
+    Route::livewire('/users', 'pages::users.index')->name('user.index');
 });
 
 require __DIR__.'/settings.php';

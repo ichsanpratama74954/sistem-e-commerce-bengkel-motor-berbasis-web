@@ -95,45 +95,45 @@ new class extends Component
                     Export
                 </button>
             
-            <flux:modal.trigger name="create-category">
+                <flux:modal.trigger name="create-category">
                     <button class="flex items-center gap-2 bg-rose-600 hover:bg-rose-700 text-white px-5 py-2 rounded-xl font-bold text-sm shadow-lg shadow-rose-500/20 transition-all transform hover:scale-[1.01] active:scale-[0.99]">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                    </svg>
+                        <svg xmlns="http://www.w3.org/2000/xl" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                        </svg>
                         Tambah Kategori
-                </button>
-            </flux:modal.trigger>
-        </div>
+                    </button>
+                </flux:modal.trigger>
+            </div>
         </div>
     </div>
 
-        <livewire:category.create />
-        <livewire:category.edit />
-        <x-flash-message />
+    <livewire:category.create />
+    <livewire:category.edit />
+    <x-flash-message />
 
-        {{-- Table Category --}}
-        <div class="overflow-x-auto mt-4 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-sm">
-            <flux:table :paginate="$this->categories" class="w-full border-collapse">
-                
-                <flux:table.columns class="bg-emerald-600 dark:bg-emerald-900 border-b border-emerald-700">
-                    <flux:table.column class="text-white font-bold text-sm bg-emerald-600 dark:bg-emerald-900">No</flux:table.column>
-                    <flux:table.column class="text-white font-bold text-sm bg-emerald-600 dark:bg-emerald-900">Name</flux:table.column>
-                    <flux:table.column class="text-white font-bold text-sm bg-emerald-600 dark:bg-emerald-900">Slug</flux:table.column>
-                    <flux:table.column class="text-white font-bold text-sm bg-emerald-600 dark:bg-emerald-900">Description</flux:table.column>
-                    <flux:table.column class="text-white font-bold text-sm bg-emerald-600 dark:bg-emerald-900">Created At</flux:table.column>
-                    <flux:table.column class="text-white font-bold text-sm bg-emerald-600 dark:bg-emerald-900">action</flux:table.column>
-                </flux:table.columns>
+    {{-- Table Category --}}
+    <div class="overflow-x-auto mt-4 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-sm">
+        <flux:table :paginate="$this->categories" class="w-full border-collapse">
+            
+            <flux:table.columns class="bg-emerald-600 dark:bg-emerald-900 border-b border-emerald-700">
+                <flux:table.column class="text-white font-bold text-sm bg-emerald-600 dark:bg-emerald-900">No</flux:table.column>
+                <flux:table.column class="text-white font-bold text-sm bg-emerald-600 dark:bg-emerald-900">Name</flux:table.column>
+                <flux:table.column class="text-white font-bold text-sm bg-emerald-600 dark:bg-emerald-900">Slug</flux:table.column>
+                <flux:table.column class="text-white font-bold text-sm bg-emerald-600 dark:bg-emerald-900">Description</flux:table.column>
+                <flux:table.column class="text-white font-bold text-sm bg-emerald-600 dark:bg-emerald-900">Created At</flux:table.column>
+                <flux:table.column class="text-white font-bold text-sm bg-emerald-600 dark:bg-emerald-900 text-center">Action</flux:table.column>
+            </flux:table.columns>
 
-                <flux:table.rows>
+            <flux:table.rows>
                 @forelse ($this->categories as $category)
                     <flux:table.row :key="$category->id" class="border-b border-zinc-100 dark:border-zinc-800/60 hover:bg-zinc-50 dark:hover:bg-zinc-800/40 transition-colors">
 
-                        {{-- No --}}
+                        {{-- 1. No --}}
                         <flux:table.cell class="text-zinc-500 dark:text-zinc-400 font-medium pl-4 py-4">
-                                {{ $loop->iteration + $this->categories->firstItem() - 1 }}
-                            </flux:table.cell>    
-                            
-                        {{-- Nama Kategori --}}
+                            {{ $loop->iteration + $this->categories->firstItem() - 1 }}
+                        </flux:table.cell>    
+                        
+                        {{-- 2. Nama Kategori --}}
                         <flux:table.cell class="font-bold text-zinc-900 dark:text-zinc-100">
                             <div class="flex items-center gap-3">
                                 <div class="w-8 h-8 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center shrink-0 border border-zinc-200 dark:border-zinc-700">
@@ -148,43 +148,25 @@ new class extends Component
                             </div>
                         </flux:table.cell>
 
-                        {{-- Deskripsi --}}
+                        {{-- 3. Slug --}}
+                        <flux:table.cell>
+                            <code class="text-xs bg-zinc-100 dark:bg-zinc-800 px-2 py-1 rounded text-rose-600 dark:text-rose-400">{{ $category->slug }}</code>
+                        </flux:table.cell>
+
+                        {{-- 4. Deskripsi --}}
                         <flux:table.cell class="text-zinc-600 dark:text-zinc-400 text-sm max-w-xs truncate">
                             {{ $category->description ?? 'Tidak ada deskripsi.' }}
                         </flux:table.cell>
 
-                        {{-- Dibuat Pada --}}
+                        {{-- 5. Dibuat Pada --}}
                         <flux:table.cell class="whitespace-nowrap text-zinc-500 dark:text-zinc-400 text-xs font-medium">
-                            {{ $category->created_at ? $category->created_at->translatedFormat('d M Y H:i \W\I\B') : '-' }}
-                            </flux:table.cell>
-
-                        {{-- Status Badge Dinamis --}}
-                            <flux:table.cell>
-                                <code class="text-xs bg-zinc-100 dark:bg-zinc-800 px-2 py-1 rounded">{{ $category->slug }}</code>
-                            </flux:table.cell>
-
-                            <flux:table.cell>
-                                @if($category->description)
-                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-cyan-100 text-cyan-800 dark:bg-cyan-950/60 dark:text-cyan-400 border border-cyan-200 dark:border-cyan-900">
-                                        {{ $category->description }}
-                                    </span>
-                                @else
-                                    <span class="text-zinc-400 italic text-sm">-</span>
-                                @endif
-                            </flux:table.cell>
-
-                            <flux:table.cell class="whitespace-nowrap text-slate-600 dark:text-zinc-400 text-xs font-semibold">
-                                <span class="bg-slate-100 dark:bg-zinc-800 px-2 py-1 rounded-md border border-slate-200 dark:border-zinc-700">
-                                    {{ $category->created_at->diffForHumans() }}
-                                </span>
-                                @else
-                                <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-bold bg-zinc-50 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 border border-zinc-200 dark:border-zinc-700">
-                                    Nonaktif
-                                </span>
+                            <div>{{ $category->created_at ? $category->created_at->translatedFormat('d M Y H:i') : '-' }}</div>
+                            @if($category->created_at)
+                                <div class="text-[10px] text-zinc-400 mt-0.5 font-normal">{{ $category->created_at->diffForHumans() }}</div>
                             @endif
-                            </flux:table.cell>
+                        </flux:table.cell>
 
-                        {{-- Action Buttons --}}
+                        {{-- 6. Action Buttons --}}
                         <flux:table.cell class="py-4">
                             <div class="flex items-center justify-center gap-1.5">
                                 {{-- View Button --}}
@@ -195,12 +177,14 @@ new class extends Component
                                     </svg>
                                 </button>
 
+                                {{-- Edit Button --}}
                                 <button type="button" wire:click="edit({{ $category->id }})" class="p-1.5 text-zinc-500 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125" />
                                     </svg>
                                 </button>
 
+                                {{-- Delete Button --}}
                                 <button type="button" wire:click="$dispatch('confirm-delete', {id: {{ $category->id }}})" class="p-1.5 text-rose-500 hover:text-rose-700 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-lg transition-colors">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
@@ -213,8 +197,8 @@ new class extends Component
                     <flux:table.row>
                         <flux:table.cell colspan="6" class="text-center py-8 text-zinc-400">
                             Tidak ada data kategori yang ditemukan.
-                            </flux:table.cell>
-                        </flux:table.row>
+                        </flux:table.cell>
+                    </flux:table.row>
                 @endforelse
             </flux:table.rows>
         </flux:table>

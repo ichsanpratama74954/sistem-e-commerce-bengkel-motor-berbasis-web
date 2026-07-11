@@ -16,6 +16,9 @@ new class extends Component
     public $total_amount = 0;
     public $status = 'pending';
 
+    // Properti untuk melihat detail pesanan (Fixing missing property)
+    public $viewingOrder = null;
+
     // Properti filter pencarian & kategori
     public $search = '';
     public $filter_status = '';
@@ -91,7 +94,7 @@ new class extends Component
     // Fungsi klik tombol mata untuk melihat detail order
     public function showOrder($id)
     {
-        $this->viewingOrder = Order::with('user')->findOrFail($id);
+        $this->viewingOrder = Order::with(['user', 'orderDetails.sparepart'])->findOrFail($id);
         Flux::modal('view-order-modal')->show();
     }
 
@@ -272,7 +275,7 @@ new class extends Component
     {
         $this->resetValidation();
         $this->reset([
-            'user_id', 'total_amount', 'status',
+            'user_id', 'total_amount', 'status', 'viewingOrder',
             'editingOrderId', 'edit_user_id', 'edit_total_amount', 'edit_status',
             'items', 'edit_items',
             'new_sparepart_id', 'new_sparepart_qty',
@@ -404,7 +407,6 @@ new class extends Component
                                 {{-- Actions --}}
                                 <flux:table.cell>
                                     <div class="flex items-center justify-center gap-1">
-                                        {{-- Tombol Fitur Mata (Sekarang Berfungsi) --}}
                                         <button type="button" wire:click="showOrder({{ $order->id }})" class="p-1 text-zinc-400 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors">
                                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
                                                 <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
@@ -438,7 +440,7 @@ new class extends Component
         {{-- SISI KANAN: SIDEBAR WIDGETS STATISTIK & FILTER --}}
         <div class="lg:col-span-1 space-y-6">
             
-            {{-- Widget 1: Statistics Overview Panel (Persentase Otomatis & Dinamis) --}}
+            {{-- Widget 1: Statistics Overview Panel --}}
             <div class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-5 space-y-4 shadow-sm">
                 <h3 class="text-xs font-black text-zinc-800 dark:text-zinc-200 tracking-tight">Statistics Overview</h3>
                 
@@ -531,9 +533,14 @@ new class extends Component
         </div>
     </div>
 
-    {{-- MODAL FORM: DETAIL VIEW --}}
-    <flux:modal name="view-order-modal" class="md:w-130" x-on:close="$wire.resetForm()">
-        @if($viewingOrder)
+    {{-- MODAL FORM: CREATE NEW ORDER --}}
+    <flux:modal name="create-order" class="md:w-130" x-on:close="$wire.resetForm()">
+        <form class="space-y-6" wire:submit.prevent="save">
+            <div>
+                <flux:heading size="lg" class="text-zinc-900 dark:text-white font-bold">Create New Order</flux:heading>
+                <flux:text class="text-zinc-500 dark:text-zinc-400 text-xs">Add a new client order billing track safely.</flux:text>
+            </div>
+
             <div class="space-y-6">
                 <flux:select label="Choose User" wire:model.live="user_id">
                     <flux:select.option value="">Select User</flux:select.option>
@@ -552,9 +559,10 @@ new class extends Component
                             <flux:select.option value="{{ $sp->id }}">{{ $sp->part_name }} (Rp {{ number_format($sp->price, 0, ',', '.') }}, stok: {{ $sp->stock }})</flux:select.option>
                         @endforeach
                     </flux:select>
-                    <flux:input type="number" class="w-20" min="1" value="1" wire:model="new_sparepart_qty" />
+                    <flux:input type="number" class="w-20" min="1" wire:model="new_sparepart_qty" />
                     <flux:button type="button" variant="primary" size="sm" wire:click="addSparepart">Add</flux:button>
                 </div>
+
                 @if(count($items) > 0)
                     <div class="space-y-1">
                         @foreach($items as $i => $item)
@@ -584,6 +592,57 @@ new class extends Component
         </form>
     </flux:modal>
 
+    {{-- MODAL FORM: DETAIL VIEW --}}
+    <flux:modal name="view-order-modal" class="md:w-130" x-on:close="$wire.resetForm()">
+        @if($viewingOrder)
+            <div class="space-y-6">
+                <div>
+                    <flux:heading size="lg" class="text-zinc-900 dark:text-white font-bold">Order Details</flux:heading>
+                    <flux:text class="text-zinc-500 dark:text-zinc-400 text-xs">Detailed audit view for #ORD-2026-{{ str_pad($viewingOrder->id, 4, '0', STR_PAD_LEFT) }}</flux:text>
+                </div>
+
+                <div class="space-y-3 text-sm">
+                    <div class="flex justify-between">
+                        <span class="text-zinc-400">Customer:</span>
+                        <span class="font-bold text-zinc-800 dark:text-zinc-200">{{ $viewingOrder->user->name ?? 'Unknown' }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-zinc-400">Status:</span>
+                        <span class="font-bold capitalize text-zinc-800 dark:text-zinc-200">{{ $viewingOrder->status }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-zinc-400">Order Date:</span>
+                        <span class="font-bold text-zinc-800 dark:text-zinc-200">{{ $viewingOrder->created_at?->format('d M Y H:i') }} WIB</span>
+                    </div>
+                </div>
+
+                <flux:separator variant="subtle" />
+
+                <flux:heading size="sm">Spareparts Summary</flux:heading>
+                <div class="space-y-1.5">
+                    @forelse($viewingOrder->orderDetails as $detail)
+                        <div class="flex items-center justify-between bg-zinc-50 dark:bg-zinc-800 px-3 py-2 rounded-lg text-sm">
+                            <span>{{ $detail->sparepart->part_name ?? 'Deleted Part' }} x{{ $detail->quantity }}</span>
+                            <span class="font-semibold">Rp {{ number_format($detail->subtotal, 0, ',', '.') }}</span>
+                        </div>
+                    @empty
+                        <div class="text-zinc-400 text-xs text-center py-2">No spareparts registered inside this order.</div>
+                    @endforelse
+                </div>
+
+                <div class="text-right text-base font-bold border-t border-zinc-100 dark:border-zinc-800 pt-3">
+                    Total: Rp {{ number_format($viewingOrder->total_amount, 0, ',', '.') }}
+                </div>
+
+                <div class="flex justify-end pt-2">
+                    <flux:modal.close>
+                        <flux:button variant="outline">Close View</flux:button>
+                    </flux:modal.close>
+                </div>
+            </div>
+        @endif
+    </flux:modal>
+
     {{-- MODAL FORM: EDIT --}}
     <flux:modal name="edit-order-modal" class="md:w-150" x-on:close="$wire.resetForm()"> 
         <form class="space-y-6" wire:submit.prevent="update">
@@ -610,9 +669,10 @@ new class extends Component
                             <flux:select.option value="{{ $sp->id }}">{{ $sp->part_name }} (Rp {{ number_format($sp->price, 0, ',', '.') }}, stok: {{ $sp->stock }})</flux:select.option>
                         @endforeach
                     </flux:select>
-                    <flux:input type="number" class="w-20" min="1" value="1" wire:model="edit_new_sparepart_qty" />
+                    <flux:input type="number" class="w-20" min="1" wire:model="edit_new_sparepart_qty" />
                     <flux:button type="button" variant="primary" size="sm" wire:click="addEditSparepart">Add</flux:button>
                 </div>
+
                 @if(count($edit_items) > 0)
                     <div class="space-y-1">
                         @foreach($edit_items as $i => $item)
@@ -624,63 +684,23 @@ new class extends Component
                         @endforeach
                     </div>
                 @endif
+
                 <div class="text-right text-sm font-medium">Total: Rp {{ number_format($edit_total_amount, 0, ',', '.') }}</div>
-                
+
                 <flux:select label="Status" wire:model="edit_status">
                     <flux:select.option value="pending">Processing</flux:select.option>
                     <flux:select.option value="approved">Completed</flux:select.option>
                     <flux:select.option value="rejected">Cancelled</flux:select.option>
                 </flux:select>
             </div>
-    
+
             <div class="flex items-center justify-end gap-3 pt-4 border-t border-zinc-100 dark:border-zinc-800">
                 <flux:modal.close>
                     <flux:button variant="outline" color="neutral">Cancel</flux:button>
                 </flux:modal.close>
-                <flux:button variant="primary" type="submit" class="bg-violet-600 hover:bg-violet-700 text-white font-bold">Update Changes</flux:button>
+                <flux:button variant="primary" type="submit" class="bg-violet-600 hover:bg-violet-700 text-white font-bold">Update Order</flux:button>
             </div>
         </form>
     </flux:modal>
 
-    <div class="overflow-x-auto">
-       <flux:table :paginate="$this->orders->hasPages()" :pagination="$this->orders" class="w-full">
-            <flux:table.columns>
-                <flux:table.column>No</flux:table.column>
-                <flux:table.column>User</flux:table.column>
-                <flux:table.column>Items</flux:table.column>
-                <flux:table.column>Total Amount</flux:table.column>
-                <flux:table.column>Status</flux:table.column>
-                <flux:table.column>Created At</flux:table.column>
-                <flux:table.column>Actions</flux:table.column>
-            </flux:table.columns>
-
-            <flux:table.rows>
-                @foreach ($this->orders as $order)
-                    <flux:table.row :key="$order->id">
-                        <flux:table.cell class="font-medium">{{ $loop->iteration }}</flux:table.cell>
-                        <flux:table.cell class="font-medium">{{ $order->user->name ?? 'ID: ' . $order->user_id }}</flux:table.cell>
-                        <flux:table.cell class="text-zinc-500 dark:text-zinc-400">{{ $order->order_details_count }} item(s)</flux:table.cell>
-                        <flux:table.cell class="font-medium">Rp {{ number_format($order->total_amount, 0, ',', '.') }}</flux:table.cell>
-                        <flux:table.cell>
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-zinc-100 text-zinc-800 dark:bg-zinc-800 dark:text-zinc-200">
-                                {{ ucfirst($order->status) }}
-                            </span>
-                        </flux:table.cell>
-                        <flux:table.cell class="whitespace-nowrap">{{ $order->created_at?->diffForHumans() ?? '-' }}</flux:table.cell>
-                        <flux:table.cell>
-                            <flux:dropdown>
-                                <flux:button variant="ghost" size="sm" icon="ellipsis-horizontal" inset="top bottom"></flux:button>
-                                <flux:menu>
-                                    <flux:menu.item icon="pencil" wire:click="$dispatch('edit-order', { id: {{ $order->id }} })">Edit</flux:menu.item>
-                                    <flux:menu.item icon="credit-card" wire:click="$dispatch('pay-order', { id: {{ $order->id }} })">Bayar</flux:menu.item>
-                                    <flux:menu.separator />
-                                    <flux:menu.item variant="danger" icon="trash" wire:click="$dispatch('confirm-delete', {id: {{ $order->id }}})">Delete</flux:menu.item>
-                                </flux:menu>
-                            </flux:dropdown>
-                        </flux:table.cell>
-                    </flux:table.row>
-                @endforeach
-            </flux:table.rows>
-        </flux:table>
-    </div>
 </div>

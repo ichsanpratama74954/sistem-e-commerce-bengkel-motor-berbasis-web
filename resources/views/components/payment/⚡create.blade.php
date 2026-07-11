@@ -2,6 +2,7 @@
 
 use App\Livewire\Forms\PaymentForm;
 use Livewire\Component;
+use Livewire\Attributes\On;
 use App\Models\Booking;
 use App\Models\Order;
 
@@ -15,6 +16,32 @@ new class extends Component {
         $this->form = new PaymentForm($this, 'form');
         $this->bookings = Booking::select('id', 'booking_date', 'status')->with('user:id,name')->get();
         $this->orders = Order::select('id', 'total_amount', 'status')->with('user:id,name')->get();
+    }
+
+    #[On('pay-booking')]
+    public function payBooking($id)
+    {
+        $booking = Booking::with('bookingDetails')->find($id);
+        if ($booking) {
+            $this->form->paymentable_type = 'App\Models\Booking';
+            $this->form->paymentable_id = $booking->id;
+            $this->form->amount = $booking->bookingDetails->sum('subtotal');
+            $this->form->payment_status = 'Pending';
+            Flux::modal('create-payment')->show();
+        }
+    }
+
+    #[On('pay-order')]
+    public function payOrder($id)
+    {
+        $order = Order::find($id);
+        if ($order) {
+            $this->form->paymentable_type = 'App\Models\Order';
+            $this->form->paymentable_id = $order->id;
+            $this->form->amount = $order->total_amount;
+            $this->form->payment_status = 'Pending';
+            Flux::modal('create-payment')->show();
+        }
     }
 
     public function save()

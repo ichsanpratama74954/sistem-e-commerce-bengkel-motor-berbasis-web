@@ -235,6 +235,7 @@ new class extends Component
     </flux:modal.trigger>
 
     <x-flash-message />
+    <livewire:payment.create />
 
     <flux:modal name="create-order" class="md:w-150" x-on:close="$wire.resetForm()"> 
         <form class="space-y-8" wire:submit.prevent="save">
@@ -380,6 +381,7 @@ new class extends Component
                                 <flux:button variant="ghost" size="sm" icon="ellipsis-horizontal" inset="top bottom"></flux:button>
                                 <flux:menu>
                                     <flux:menu.item icon="pencil" wire:click="$dispatch('edit-order', { id: {{ $order->id }} })">Edit</flux:menu.item>
+                                    <flux:menu.item icon="credit-card" wire:click="$dispatch('pay-order', { id: {{ $order->id }} })">Bayar</flux:menu.item>
                                     <flux:menu.separator />
                                     <flux:menu.item variant="danger" icon="trash" wire:click="$dispatch('confirm-delete', {id: {{ $order->id }}})">Delete</flux:menu.item>
                                 </flux:menu>

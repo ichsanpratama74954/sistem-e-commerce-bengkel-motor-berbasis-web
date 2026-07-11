@@ -33,6 +33,7 @@ new class extends Component
 
     <livewire:booking.create />
     <livewire:booking.edit />
+    <livewire:payment.create />
     <x-flash-message />
 
     {{-- table --}}
@@ -100,6 +101,7 @@ new class extends Component
 
                                 <flux:menu>
                                     <flux:menu.item icon="pencil" wire:click="edit({{ $booking->id }})">Edit</flux:menu.item>
+                                    <flux:menu.item icon="credit-card" wire:click="$dispatch('pay-booking', { id: {{ $booking->id }} })">Bayar</flux:menu.item>
                                     <flux:menu.separator />
                                     <flux:menu.item variant="danger" icon="trash" wire:click="$dispatch('confirm-delete', {id: {{ $booking->id }}})">Delete</flux:menu.item>
                                 </flux:menu>

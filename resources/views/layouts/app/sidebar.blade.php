@@ -19,7 +19,11 @@
                     {{-- Menu Khusus Admin untuk Manajemen Data --}}
                     @if(auth()->user()->role === 'admin')
                         <flux:separator class="my-2" />
-                        
+
+                        <flux:sidebar.item icon="users" :href="route('user.index')" :current="request()->routeIs('user.index')" wire:navigate>
+                            {{ __('Users') }}
+                        </flux:sidebar.item>
+
                         <flux:sidebar.item icon="folder" :href="route('category.index')" :current="request()->routeIs('category.index')" wire:navigate>
                             {{ __('Category') }}
                         </flux:sidebar.item>

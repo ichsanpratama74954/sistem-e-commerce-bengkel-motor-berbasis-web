@@ -111,85 +111,17 @@ new class extends Component
         <livewire:category.edit />
         <x-flash-message />
 
-    {{-- Stats Cards Grid --}}
-    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
-        <div class="bg-white dark:bg-zinc-900 p-4 rounded-2xl border border-zinc-100 dark:border-zinc-800 shadow-sm flex items-center gap-4">
-            <div class="p-3 rounded-xl bg-rose-50 dark:bg-rose-950/40 text-rose-500 shrink-0">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6ZM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25A2.25 2.25 0 0 1 13.5 18v-2.25Z" />
-                </svg>
-            </div>
-            <div>
-                <p class="text-xs font-semibold text-zinc-400 uppercase tracking-wider">Total Kategori</p>
-                <p class="text-2xl font-black text-zinc-900 dark:text-white">{{ $this->stats['total'] }}</p>
-                <p class="text-[10px] text-zinc-400 font-medium">Semua data</p>
-            </div>
-        </div>
-
-        <div class="bg-white dark:bg-zinc-900 p-4 rounded-2xl border border-zinc-100 dark:border-zinc-800 shadow-sm flex items-center gap-4">
-            <div class="p-3 rounded-xl bg-amber-50 dark:bg-amber-950/40 text-amber-500 shrink-0">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="m21 7.5-9-5.25L3 7.5m18 0-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9" />
-                </svg>
-            </div>
-            <div>
-                <p class="text-xs font-semibold text-zinc-400 uppercase tracking-wider">Sparepart</p>
-                <p class="text-2xl font-black text-zinc-900 dark:text-white">{{ $this->stats['sparepart'] }}</p>
-                <p class="text-[10px] text-zinc-400 font-medium">Kategori sparepart</p>
-            </div>
-        </div>
-
-        <div class="bg-white dark:bg-zinc-900 p-4 rounded-2xl border border-zinc-100 dark:border-zinc-800 shadow-sm flex items-center gap-4">
-            <div class="p-3 rounded-xl bg-blue-50 dark:bg-blue-950/40 text-blue-500 shrink-0">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M11.42 15.17 17.25 21A2.652 2.652 0 0 0 21 17.25l-5.83-5.83m0 0a2.95 2.95 0 1 1-4.174-4.174m4.174 4.174-.052.052a2.95 2.95 0 0 1-4.174 0l-.052-.052m0 0L3.92 5.34a2.652 2.652 0 0 0-3.75 3.75l5.83 5.83m0 0a2.95 2.95 0 0 1 0-4.174m0 4.174.052.052a2.95 2.95 0 0 0 4.174 0l.052-.052m0 0 5.83 5.83a2.652 2.652 0 0 0 3.75-3.75l-5.83-5.83" />
-                </svg>
-            </div>
-            <div>
-                <p class="text-xs font-semibold text-zinc-400 uppercase tracking-wider">Service</p>
-                <p class="text-2xl font-black text-zinc-900 dark:text-white">{{ $this->stats['service'] }}</p>
-                <p class="text-[10px] text-zinc-400 font-medium">Kategori service</p>
-            </div>
-        </div>
-
-        <div class="bg-white dark:bg-zinc-900 p-4 rounded-2xl border border-zinc-100 dark:border-zinc-800 shadow-sm flex items-center gap-4">
-            <div class="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-500 shrink-0">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                </svg>
-            </div>
-            <div>
-                <p class="text-xs font-semibold text-zinc-400 uppercase tracking-wider">Aktif</p>
-                <p class="text-2xl font-black text-zinc-900 dark:text-white">{{ $this->stats['aktif'] }}</p>
-                <p class="text-[10px] text-zinc-400 font-medium">Kategori aktif</p>
-            </div>
-        </div>
-
-        <div class="bg-white dark:bg-zinc-900 p-4 rounded-2xl border border-zinc-100 dark:border-zinc-800 shadow-sm flex items-center gap-4">
-            <div class="p-3 rounded-xl bg-purple-50 dark:bg-purple-950/40 text-purple-500 shrink-0">
-                <svg xmlns="http://www.w3.org/2000/xl" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="m20.25 7.5-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125 1.125 1.125 1.125Z" />
-                </svg>
-            </div>
-            <div>
-                <p class="text-xs font-semibold text-zinc-400 uppercase tracking-wider">Nonaktif</p>
-                <p class="text-2xl font-black text-zinc-900 dark:text-white">{{ $this->stats['nonaktif'] }}</p>
-                <p class="text-[10px] text-zinc-400 font-medium">Kategori nonaktif</p>
-            </div>
-        </div>
-    </div>
-
-    {{-- Table Section --}}
-    <div class="overflow-hidden bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm">
-        <flux:table :paginate="$this->categories" class="w-full border-collapse text-left">
-            
-            <flux:table.columns class="bg-zinc-900 dark:bg-zinc-800 border-b border-zinc-700">
-                <flux:table.column class="text-white font-bold text-xs uppercase tracking-wider py-4 bg-zinc-900 dark:bg-zinc-800 pl-4 w-16">No</flux:table.column>
-                <flux:table.column class="text-white font-bold text-xs uppercase tracking-wider py-4 bg-zinc-900 dark:bg-zinc-800">Nama Kategori</flux:table.column>
-                <flux:table.column class="text-white font-bold text-xs uppercase tracking-wider py-4 bg-zinc-900 dark:bg-zinc-800">Deskripsi</flux:table.column>
-                <flux:table.column class="text-white font-bold text-xs uppercase tracking-wider py-4 bg-zinc-900 dark:bg-zinc-800">Dibuat Pada</flux:table.column>
-                <flux:table.column class="text-white font-bold text-xs uppercase tracking-wider py-4 bg-zinc-900 dark:bg-zinc-800 w-28">Status</flux:table.column>
-                <flux:table.column class="text-white font-bold text-xs uppercase tracking-wider py-4 bg-zinc-900 dark:bg-zinc-800 text-center w-36">Aksi</flux:table.column>
+        {{-- Table Category --}}
+        <div class="overflow-x-auto mt-4 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-sm">
+            <flux:table :paginate="$this->categories" class="w-full border-collapse">
+                
+                <flux:table.columns class="bg-emerald-600 dark:bg-emerald-900 border-b border-emerald-700">
+                    <flux:table.column class="text-white font-bold text-sm bg-emerald-600 dark:bg-emerald-900">No</flux:table.column>
+                    <flux:table.column class="text-white font-bold text-sm bg-emerald-600 dark:bg-emerald-900">Name</flux:table.column>
+                    <flux:table.column class="text-white font-bold text-sm bg-emerald-600 dark:bg-emerald-900">Slug</flux:table.column>
+                    <flux:table.column class="text-white font-bold text-sm bg-emerald-600 dark:bg-emerald-900">Description</flux:table.column>
+                    <flux:table.column class="text-white font-bold text-sm bg-emerald-600 dark:bg-emerald-900">Created At</flux:table.column>
+                    <flux:table.column class="text-white font-bold text-sm bg-emerald-600 dark:bg-emerald-900">action</flux:table.column>
                 </flux:table.columns>
 
                 <flux:table.rows>
@@ -228,9 +160,22 @@ new class extends Component
 
                         {{-- Status Badge Dinamis --}}
                             <flux:table.cell>
-                            @if(($category->status ?? 'aktif') === 'aktif')
-                                <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-bold bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-900">
-                                    Aktif
+                                <code class="text-xs bg-zinc-100 dark:bg-zinc-800 px-2 py-1 rounded">{{ $category->slug }}</code>
+                            </flux:table.cell>
+
+                            <flux:table.cell>
+                                @if($category->description)
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-cyan-100 text-cyan-800 dark:bg-cyan-950/60 dark:text-cyan-400 border border-cyan-200 dark:border-cyan-900">
+                                        {{ $category->description }}
+                                    </span>
+                                @else
+                                    <span class="text-zinc-400 italic text-sm">-</span>
+                                @endif
+                            </flux:table.cell>
+
+                            <flux:table.cell class="whitespace-nowrap text-slate-600 dark:text-zinc-400 text-xs font-semibold">
+                                <span class="bg-slate-100 dark:bg-zinc-800 px-2 py-1 rounded-md border border-slate-200 dark:border-zinc-700">
+                                    {{ $category->created_at->diffForHumans() }}
                                 </span>
                                 @else
                                 <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-bold bg-zinc-50 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 border border-zinc-200 dark:border-zinc-700">

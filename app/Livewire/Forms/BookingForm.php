@@ -4,15 +4,21 @@ namespace App\Livewire\Forms;
 
 use Livewire\Form;
 use App\Models\Booking;
+use App\Models\Service;
+use App\Models\Sparepart;
+use App\Models\BookingDetail;
 use Illuminate\Validation\Rule;
 
 class BookingForm extends Form
 {
-    public string $user_id = '';
-    public string $motorcycle_id = '';
+    public int $user_id = 0;
+    public int $motorcycle_id = 0;
     public string $booking_date = '';
     public string $status = 'pending';
     public ?Booking $booking = null;
+
+    public array $selected_services = [];
+    public array $selected_spareparts = [];
 
     public function rules(): array
     {
@@ -20,11 +26,12 @@ class BookingForm extends Form
             'user_id' => [
                 'required',
                 'integer',
-                'exists:users,id', 
+                'exists:users,id',
             ],
             'motorcycle_id' => [
                 'required',
                 'integer',
+                'exists:motorcycles,id',
             ],
             'booking_date' => [
                 'required',
@@ -41,12 +48,15 @@ class BookingForm extends Form
                 'string',
                 Rule::in(['pending', 'approved', 'rejected']),
             ],
+            'selected_services' => ['nullable', 'array'],
+            'selected_services.*.id' => ['required', 'integer', 'exists:services,id'],
+            'selected_services.*.quantity' => ['required', 'integer', 'min:1'],
+            'selected_spareparts' => ['nullable', 'array'],
+            'selected_spareparts.*.id' => ['required', 'integer', 'exists:spareparts,id'],
+            'selected_spareparts.*.quantity' => ['required', 'integer', 'min:1'],
         ];
     }
 
-    /**
-     * Kustomisasi Pesan Error Agar Muncul Peringatan Bahasa Indonesia yang Jelas
-     */
     public function messages(): array
     {
         return [
@@ -57,16 +67,29 @@ class BookingForm extends Form
     public function setBooking(Booking $booking): void
     {
         $this->booking = $booking;
-        $this->user_id = (string) $booking->user_id;
-        $this->motorcycle_id = (string) $booking->motorcycle_id;
+        $this->user_id = (int) $booking->user_id;
+        $this->motorcycle_id = (int) $booking->motorcycle_id;
         $this->booking_date = $booking->booking_date;
         $this->status = $booking->status;
+
+        $this->selected_services = $booking->bookingDetails()
+            ->whereNotNull('service_id')
+            ->get()
+            ->map(fn ($d) => ['id' => $d->service_id, 'quantity' => $d->quantity])
+            ->toArray();
+
+        $this->selected_spareparts = $booking->bookingDetails()
+            ->whereNotNull('sparepart_id')
+            ->get()
+            ->map(fn ($d) => ['id' => $d->sparepart_id, 'quantity' => $d->quantity])
+            ->toArray();
     }
 
     public function store()
     {
         $this->validate();
-        Booking::create($this->only(['user_id', 'motorcycle_id', 'booking_date', 'status']));
+        $booking = Booking::create($this->only(['user_id', 'motorcycle_id', 'booking_date', 'status']));
+        $this->syncDetails($booking);
         $this->reset();
     }
 
@@ -74,6 +97,33 @@ class BookingForm extends Form
     {
         $this->validate();
         $this->booking->update($this->only(['user_id', 'motorcycle_id', 'booking_date', 'status']));
+        $this->booking->bookingDetails()->delete();
+        $this->syncDetails($this->booking);
         $this->reset();
+    }
+
+    protected function syncDetails(Booking $booking): void
+    {
+        foreach ($this->selected_services as $item) {
+            $service = Service::find($item['id']);
+            $price = $service?->service_price ?? 0;
+            $booking->bookingDetails()->create([
+                'service_id' => $item['id'],
+                'quantity' => $item['quantity'],
+                'unit_price' => $price,
+                'subtotal' => $price * $item['quantity'],
+            ]);
+        }
+
+        foreach ($this->selected_spareparts as $item) {
+            $sparepart = Sparepart::find($item['id']);
+            $price = $sparepart?->price ?? 0;
+            $booking->bookingDetails()->create([
+                'sparepart_id' => $item['id'],
+                'quantity' => $item['quantity'],
+                'unit_price' => $price,
+                'subtotal' => $price * $item['quantity'],
+            ]);
+        }
     }
 }

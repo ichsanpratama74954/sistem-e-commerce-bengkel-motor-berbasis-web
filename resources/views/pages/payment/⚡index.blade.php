@@ -57,8 +57,8 @@ new class extends Component {
         return Payment::query()
             ->when($this->search, function ($query) {
                 $query->where('id', 'like', "%{$this->search}%")
-                      ->orWhere('booking_id', 'like', "%{$this->search}%")
-                      ->orWhere('order_id', 'like', "%{$this->search}%")
+                      ->orWhere('paymentable_id', 'like', "%{$this->search}%")
+                      ->orWhere('paymentable_type', 'like', "%{$this->search}%")
                       ->orWhere('amount', 'like', "%{$this->search}%")
                       ->orWhere('payment_method', 'like', "%{$this->search}%"); 
             })
@@ -199,15 +199,15 @@ new class extends Component {
                         <flux:table.row :key="$payment->id" class="hover:bg-indigo-50/20 dark:hover:bg-indigo-950/10 transition-colors duration-150">
                             <flux:table.cell class="font-mono text-xs font-bold text-indigo-600/80 dark:text-indigo-400">TX-{{ str_pad($payment->id, 5, '0', STR_PAD_LEFT) }}</flux:table.cell>
                             <flux:table.cell>
-                                @if($payment->booking_id)
+                                @php
+                                    $isBooking = $payment->paymentable_type === 'App\Models\Booking';
+                                    $label = $isBooking ? 'Booking' : 'Order';
+                                    $color = $isBooking ? 'from-blue-400 to-blue-600 shadow-blue-500/50' : 'from-purple-400 to-purple-600 shadow-purple-500/50';
+                                @endphp
+                                @if($payment->paymentable_type && $payment->paymentable_id)
                                     <div class="flex items-center gap-2.5">
-                                        <span class="w-2.5 h-2.5 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 shadow-sm shadow-blue-500/50"></span>
-                                        <span class="text-sm font-bold text-zinc-800 dark:text-zinc-200">Booking #{{ $payment->booking_id }}</span>
-                                    </div>
-                                @elseif($payment->order_id)
-                                    <div class="flex items-center gap-2.5">
-                                        <span class="w-2.5 h-2.5 rounded-full bg-gradient-to-br from-purple-400 to-purple-600 shadow-sm shadow-purple-500/50"></span>
-                                        <span class="text-sm font-bold text-zinc-800 dark:text-zinc-200">Order #{{ $payment->order_id }}</span>
+                                        <span class="w-2.5 h-2.5 rounded-full bg-gradient-to-br {{ $color }} shadow-sm"></span>
+                                        <span class="text-sm font-bold text-zinc-800 dark:text-zinc-200">{{ $label }} #{{ $payment->paymentable_id }}</span>
                                     </div>
                                 @else
                                     <span class="text-zinc-400 italic text-xs">Manual Injection</span>

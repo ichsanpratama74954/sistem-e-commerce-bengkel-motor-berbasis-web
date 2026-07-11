@@ -2,9 +2,20 @@
 
 use App\Livewire\Forms\PaymentForm;
 use Livewire\Component;
+use App\Models\Booking;
+use App\Models\Order;
 
 new class extends Component {
     public PaymentForm $form;
+    public $bookings = [];
+    public $orders = [];
+
+    public function mount()
+    {
+        $this->form = new PaymentForm($this, 'form');
+        $this->bookings = Booking::select('id', 'booking_date', 'status')->with('user:id,name')->get();
+        $this->orders = Order::select('id', 'total_amount', 'status')->with('user:id,name')->get();
+    }
 
     public function save()
     {
@@ -30,22 +41,34 @@ new class extends Component {
             </div>
 
             <div class="space-y-6">
-                {{-- Grid 1: Source Origin --}}
                 <div class="grid grid-cols-2 gap-4">
-                    <flux:input label="Booking ID (Optional)" placeholder="e.g. 1" wire:model="form.booking_id" />
-                    <flux:input label="Order ID (Optional)" placeholder="e.g. 3" wire:model="form.order_id" />
+                    <flux:select label="Source Type" wire:model="form.paymentable_type">
+                        <flux:select.option value="">Select Type</flux:select.option>
+                        <flux:select.option value="App\Models\Booking">Booking (Service)</flux:select.option>
+                        <flux:select.option value="App\Models\Order">Order (Sparepart)</flux:select.option>
+                    </flux:select>
+
+                    <flux:select label="Source ID" wire:model="form.paymentable_id">
+                        <flux:select.option value="">Select Source</flux:select.option>
+                        @if($form->paymentable_type === 'App\Models\Booking')
+                            @foreach($bookings as $b)
+                                <flux:select.option value="{{ $b->id }}">Booking #{{ $b->id }} - {{ $b->user?->name ?? 'N/A' }} ({{ $b->booking_date }})</flux:select.option>
+                            @endforeach
+                        @elseif($form->paymentable_type === 'App\Models\Order')
+                            @foreach($orders as $o)
+                                <flux:select.option value="{{ $o->id }}">Order #{{ $o->id }} - {{ $o->user?->name ?? 'N/A' }} (Rp {{ number_format($o->total_amount, 0, ',', '.') }})</flux:select.option>
+                            @endforeach
+                        @endif
+                    </flux:select>
                 </div>
 
-                {{-- Input 2: Nominal Uang --}}
                 <flux:input label="Amount (Rp)" type="number" placeholder="Enter total amount" wire:model="form.amount" />
                 
-                {{-- Grid 3: Metode & Status --}}
                 <div class="grid grid-cols-2 gap-4">
-                    {{-- METODE PEMBAYARAN 💳 --}}
                     <flux:select label="Payment Method" wire:model="form.payment_method" placeholder="Select method...">
-                        <flux:select.option value="Cash">💵 Cash / Tunai</flux:select.option>
-                        <flux:select.option value="Transfer">🏦 Bank Transfer</flux:select.option>
-                        <flux:select.option value="QRIS">📱 QRIS / E-Wallet</flux:select.option>
+                        <flux:select.option value="Cash">Cash / Tunai</flux:select.option>
+                        <flux:select.option value="Transfer">Bank Transfer</flux:select.option>
+                        <flux:select.option value="QRIS">QRIS / E-Wallet</flux:select.option>
                         <flux:select.option value="DANA">DANA</flux:select.option>
                     </flux:select>
 

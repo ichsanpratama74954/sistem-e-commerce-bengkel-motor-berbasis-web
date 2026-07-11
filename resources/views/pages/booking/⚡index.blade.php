@@ -13,7 +13,7 @@ new class extends Component
     #[Computed]
     public function bookings()
     {
-        return Booking::with(['user', 'motorcycle'])->latest()->paginate(10);
+        return Booking::with(['user', 'motorcycle', 'bookingDetails'])->latest()->paginate(10);
     }
 
     public function edit($id){
@@ -43,6 +43,8 @@ new class extends Component
                 <flux:table.column>User</flux:table.column>
                 <flux:table.column>Motorcycle</flux:table.column>
                 <flux:table.column>Booking Date</flux:table.column>
+                <flux:table.column>Services</flux:table.column>
+                <flux:table.column>Total</flux:table.column>
                 <flux:table.column>Status</flux:table.column>
                 <flux:table.column>Created At</flux:table.column>
                 <flux:table.column class="text-right">Actions</flux:table.column>
@@ -72,6 +74,14 @@ new class extends Component
 
                         <flux:table.cell class="whitespace-nowrap">
                             {{ \Carbon\Carbon::parse($booking->booking_date)->format('d M Y') }}
+                        </flux:table.cell>
+
+                        <flux:table.cell>
+                            <span class="text-xs text-zinc-500">{{ $booking->bookingDetails->count() }} item(s)</span>
+                        </flux:table.cell>
+
+                        <flux:table.cell class="font-medium">
+                            Rp {{ number_format($booking->bookingDetails->sum('subtotal'), 0, ',', '.') }}
                         </flux:table.cell>
 
                         <flux:table.cell>

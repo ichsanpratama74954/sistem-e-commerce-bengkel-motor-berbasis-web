@@ -4,9 +4,20 @@ use Livewire\Component;
 use Livewire\Attributes\On;
 use App\Livewire\Forms\PaymentForm;
 use App\Models\Payment;
+use App\Models\Booking;
+use App\Models\Order;
 
 new class extends Component {
     public PaymentForm $form;
+    public $bookings = [];
+    public $orders = [];
+
+    public function mount()
+    {
+        $this->form = new PaymentForm($this, 'form');
+        $this->bookings = Booking::select('id', 'booking_date', 'status')->with('user:id,name')->get();
+        $this->orders = Order::select('id', 'total_amount', 'status')->with('user:id,name')->get();
+    }
 
     #[On('edit-payment')]
     public function editPayment($id){
@@ -33,7 +44,7 @@ new class extends Component {
     {
         $payment = Payment::find($id);
         $this->form->setPayment($payment);
-        Flux::modal('delete-category')->show(); // Menggunakan nama modal delete terpadu
+        Flux::modal('delete-category')->show();
     }
 
     public function deletePayment() {
@@ -54,18 +65,32 @@ new class extends Component {
 
             <div class="space-y-6">
                 <div class="grid grid-cols-2 gap-4">
-                    <flux:input label="Booking ID (Optional)" wire:model="form.booking_id" />
-                    <flux:input label="Order ID (Optional)" wire:model="form.order_id" />
+                    <flux:select label="Source Type" wire:model="form.paymentable_type">
+                        <flux:select.option value="">Select Type</flux:select.option>
+                        <flux:select.option value="App\Models\Booking">Booking (Service)</flux:select.option>
+                        <flux:select.option value="App\Models\Order">Order (Sparepart)</flux:select.option>
+                    </flux:select>
+
+                    <flux:select label="Source ID" wire:model="form.paymentable_id">
+                        <flux:select.option value="">Select Source</flux:select.option>
+                        @if($form->paymentable_type === 'App\Models\Booking')
+                            @foreach($bookings as $b)
+                                <flux:select.option value="{{ $b->id }}">Booking #{{ $b->id }} - {{ $b->user?->name ?? 'N/A' }} ({{ $b->booking_date }})</flux:select.option>
+                            @endforeach
+                        @elseif($form->paymentable_type === 'App\Models\Order')
+                            @foreach($orders as $o)
+                                <flux:select.option value="{{ $o->id }}">Order #{{ $o->id }} - {{ $o->user?->name ?? 'N/A' }} (Rp {{ number_format($o->total_amount, 0, ',', '.') }})</flux:select.option>
+                            @endforeach
+                        @endif
+                    </flux:select>
                 </div>
                 <flux:input label="Amount (Rp)" type="number" wire:model="form.amount" />
                 
-                {{-- GRID BARU: Membagi area status & metode menjadi 2 kolom --}}
                 <div class="grid grid-cols-2 gap-4">
-                    {{-- PEMBAYARAN 💳 --}}
                     <flux:select label="Payment Method" wire:model="form.payment_method" placeholder="Select method...">
-                        <flux:select.option value="Cash">💵 Cash / Tunai</flux:select.option>
-                        <flux:select.option value="Transfer">🏦 Bank Transfer</flux:select.option>
-                        <flux:select.option value="QRIS">📱 QRIS / E-Wallet</flux:select.option>
+                        <flux:select.option value="Cash">Cash / Tunai</flux:select.option>
+                        <flux:select.option value="Transfer">Bank Transfer</flux:select.option>
+                        <flux:select.option value="QRIS">QRIS / E-Wallet</flux:select.option>
                         <flux:select.option value="DANA">DANA</flux:select.option>
                     </flux:select>
 
@@ -86,7 +111,6 @@ new class extends Component {
         </form>
     </flux:modal>
 
-    {{-- Delete Modal --}}
     <flux:modal name="delete-category" class="md:w-150" x-on:close="$wire.resetForm()">
         <form class="space-y-8" wire:submit.prevent="deletePayment">
             <div class="space-y-2">

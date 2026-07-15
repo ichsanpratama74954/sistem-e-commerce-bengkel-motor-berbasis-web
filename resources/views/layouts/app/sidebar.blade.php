@@ -4,6 +4,11 @@
         @include('partials.head')
     </head>
     <body class="min-h-screen bg-white dark:bg-zinc-800">
+        @php
+            // Proteksi case-insensitive: Ubah semua ke huruf kecil agar kebal error salah ketik/kapital di DB
+            $userRole = strtolower(trim(auth()->user()->role ?? ''));
+        @endphp
+
         <flux:sidebar sticky collapsible="mobile" class="border-e border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900">
             <flux:sidebar.header>
                 <x-app-logo :sidebar="true" href="{{ route('dashboard') }}" wire:navigate />
@@ -12,14 +17,15 @@
 
             <flux:sidebar.nav>
                 <flux:sidebar.group :heading="__('Platform')" class="grid">
+                    <!-- BISA DIAKSES SEMUA ROLE -->
                     <flux:sidebar.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>
                         {{ __('Dashboard') }}
                     </flux:sidebar.item>
 
-                    {{-- Menu Khusus Admin untuk Manajemen Data --}}
-                    @if(auth()->user()->role === 'admin')
-                        <flux:separator class="my-2" />
+                    <flux:separator class="my-2" />
 
+                    {{-- 1. MENU KHUSUS ADMIN (Manajemen Inti & Finansial) --}}
+                    @if($userRole === 'admin')
                         <flux:sidebar.item icon="users" :href="route('user.index')" :current="request()->routeIs('user.index')" wire:navigate>
                             {{ __('Users') }}
                         </flux:sidebar.item>
@@ -31,11 +37,25 @@
                         <flux:sidebar.item icon="cube" :href="route('sparepart.index')" :current="request()->routeIs('sparepart.index')" wire:navigate>
                             {{ __('Spareparts') }}
                         </flux:sidebar.item>
-                        
+
+                        <flux:sidebar.item icon="credit-card" :href="route('payment.index')" :current="request()->routeIs('payment.index')" wire:navigate>
+                            {{ __('Payments') }}
+                        </flux:sidebar.item>
+
+                        <flux:sidebar.item icon="document-chart-bar" :href="route('reports.index')" :current="request()->routeIs('reports.index')" wire:navigate>
+                            {{ __('Reports') }}
+                        </flux:sidebar.item>
+                    @endif
+
+                    {{-- 2. MENU ADMIN & MEKANIK (Proses Servis Motor) --}}
+                    @if(in_array($userRole, ['admin', 'mekanik']))
                         <flux:sidebar.item icon="wrench" :href="route('service.index')" :current="request()->routeIs('service.index')" wire:navigate>
                             {{ __('Service') }}
                         </flux:sidebar.item>
+                    @endif
 
+                    {{-- 3. MENU ADMIN & PELANGGAN (Belanja & Data Kendaraan) --}}
+                    @if(in_array($userRole, ['admin', 'pelanggan']))
                         <flux:sidebar.item icon="shopping-cart" :href="route('order.index')" :current="request()->routeIs('order.index')" wire:navigate>
                             {{ __('Orders') }}
                         </flux:sidebar.item>
@@ -43,13 +63,12 @@
                         <flux:sidebar.item icon="wrench" :href="route('motorcycle.index')" :current="request()->routeIs('motorcycle.index')" wire:navigate>
                             {{ __('Motorcycles') }}
                         </flux:sidebar.item>
+                    @endif
 
+                    {{-- 4. BISA DIAKSES SEMUA ROLE (Daftar Booking Servis) --}}
+                    @if(in_array($userRole, ['admin', 'pelanggan', 'mekanik']))
                         <flux:sidebar.item icon="calendar" :href="route('booking.index')" :current="request()->routeIs('booking.index')" wire:navigate>
                             {{ __('Bookings') }}
-                        </flux:sidebar.item>
-
-                        <flux:sidebar.item icon="credit-card" :href="route('payment.index')" :current="request()->routeIs('payment.index')" wire:navigate>
-                            {{ __('Payments') }}
                         </flux:sidebar.item>
                     @endif
                 </flux:sidebar.group>
@@ -131,6 +150,12 @@
                 <flux:toast />
             </flux:toast.group>
         @endpersist
+
+        {{-- Chart.js --}}
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+        {{-- Tempat script dari halaman --}}
+        @stack('scripts')
 
         @fluxScripts
     </body>

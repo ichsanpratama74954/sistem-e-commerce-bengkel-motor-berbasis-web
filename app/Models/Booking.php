@@ -16,6 +16,7 @@ class Booking extends Model
     protected $fillable = [
         'user_id',
         'motorcycle_id',
+        'mechanic_id', // 🌟 Kolom baru berhasil didaftarkan
         'booking_date',
         'status',
     ];
@@ -23,6 +24,15 @@ class Booking extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * 🌟 Relasi baru ke model User (sebagai mekanik)
+     * Kita menentukan foreign key 'mechanic_id' secara eksplisit
+     */
+    public function mechanic(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'mechanic_id');
     }
 
     public function motorcycle(): BelongsTo

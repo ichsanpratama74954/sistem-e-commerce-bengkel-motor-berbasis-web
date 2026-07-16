@@ -48,12 +48,12 @@
                         </a>
                     @else
                         <a href="{{ route('login') }}" class="text-zinc-600 hover:text-zinc-900 font-bold text-sm px-4 py-2 transition-colors">
-                            Gassss
+                            LOGIN
                         </a>
 
                         @if (Route::has('register'))
                             <a href="{{ route('register') }}" class="bg-violet-600 hover:bg-violet-700 text-white font-bold text-sm px-5 py-2.5 rounded-xl transition-all shadow-md shadow-violet-500/10">
-                                Daftar
+                                DAFTAR
                             </a>
                         @endif
                     @endauth

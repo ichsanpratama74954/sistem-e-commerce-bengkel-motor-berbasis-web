@@ -12,22 +12,36 @@ new class extends Component
     #[Computed]
     public function motorcycles()
     {
-        return Motorcycle::with('user')->latest()->paginate(10);
+        $query = Motorcycle::with('user')->latest();
+
+        // REVISI: Jika pelanggan, hanya tampilkan motor milik sendiri
+        if (auth()->user()->role === 'pelanggan') {
+            $query->where('user_id', auth()->id());
+        }
+
+        return $query->paginate(10);
     }
 
     #[Computed]
     public function totalMotorcycles()
     {
-        return Motorcycle::count();
+        $query = Motorcycle::query();
+
+        // REVISI: Hitung total unit berdasarkan role yang login
+        if (auth()->user()->role === 'pelanggan') {
+            $query->where('user_id', auth()->id());
+        }
+
+        return $query->count();
     }
 };
 ?>
 
-<div class="max-w-7xl mx-auto space-y-6 container pb-12 px-4">
+<div class="max-w-7xl mx-auto space-y-4 container pb-12 px-4">
     {{-- HEADER UTAMA --}}
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-zinc-200 dark:border-zinc-800 pb-5">
         <div>
-            <flux:heading size="xl" class="text-zinc-900 dark:text-white font-black tracking-tight">Motorcyles</flux:heading>
+            <flux:heading size="xl" class="text-zinc-900 dark:text-white font-black tracking-tight">Motorcycles</flux:heading>
             <flux:subheading size="sm" class="text-zinc-500 dark:text-zinc-400 mt-1">Manage corporate vehicles, client ownership profiles, and license plates.</flux:subheading>
         </div>
         
@@ -40,7 +54,7 @@ new class extends Component
     <livewire:motorcycle.edit :key="'edit-motorcycle-modal'" /> 
     <x-flash-message />
 
-    {{-- DESAIN BARU: HORIZONTAL STATS TOP BAR (Beda Total dari Layout Orders/Payments) --}}
+    {{-- DESAIN BARU: HORIZONTAL STATS TOP BAR --}}
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div class="bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-xl p-4 flex items-center justify-between shadow-3xs">
             <div>
@@ -74,12 +88,13 @@ new class extends Component
     {{-- DATA CONTAINER FULL-WIDTH --}}
     <div class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl overflow-hidden shadow-xs">
         <div class="overflow-x-auto w-full">
-            {{-- Kunci lebar minimal agar layout tidak gepeng saat responsif --}}
             <flux:table :paginate="$this->motorcycles->hasPages()" :pagination="$this->motorcycles" class="w-full min-w-[850px]">
                 <flux:table.columns>
                     <flux:table.column class="text-xs font-bold text-zinc-500 w-14">No</flux:table.column>
-                    {{-- Batasi kolom Owner agar menendang kolom kanan dengan aman --}}
-                    <flux:table.column class="text-xs font-bold text-zinc-500 w-64">Owner Name</flux:table.column>
+                    {{-- Sembunyikan kolom Owner Name secara visual jika yang login adalah pelanggan --}}
+                    @if(auth()->user()->role !== 'pelanggan')
+                        <flux:table.column class="text-xs font-bold text-zinc-500 w-64">Owner Name</flux:table.column>
+                    @endif
                     <flux:table.column class="text-xs font-bold text-zinc-500 w-52">Vehicle Specs</flux:table.column>
                     <flux:table.column class="text-xs font-bold text-zinc-500 w-44">Plate Number</flux:table.column>
                     <flux:table.column class="text-xs font-bold text-zinc-500">Registered</flux:table.column>
@@ -95,19 +110,21 @@ new class extends Component
                                 {{ $loop->iteration }}
                             </flux:table.cell>
 
-                            {{-- Owner Name (SOLUSI TABRAKAN: dibungkus ke bawah jika kepanjangan) --}}
-                            <flux:table.cell class="w-64 whitespace-normal break-words pr-6">
-                                <div class="flex flex-col">
-                                    <span class="font-bold text-zinc-950 dark:text-zinc-50 tracking-tight leading-tight">
-                                        {{ $motorcycle->user->name ?? 'No Owner Assigned' }}
-                                    </span>
-                                    <span class="text-[10px] font-medium text-zinc-400 dark:text-zinc-500 mt-0.5">
-                                        Client Account #{{ $motorcycle->user_id ?? '-' }}
-                                    </span>
-                                </div>
-                            </flux:table.cell>
+                            {{-- Owner Name (Hanya dirender jika admin) --}}
+                            @if(auth()->user()->role !== 'pelanggan')
+                                <flux:table.cell class="w-64 whitespace-normal break-words pr-6">
+                                    <div class="flex flex-col">
+                                        <span class="font-bold text-zinc-950 dark:text-zinc-50 tracking-tight leading-tight">
+                                            {{ $motorcycle->user->name ?? 'No Owner Assigned' }}
+                                        </span>
+                                        <span class="text-[10px] font-medium text-zinc-400 dark:text-zinc-500 mt-0.5">
+                                            Client Account #{{ $motorcycle->user_id ?? '-' }}
+                                        </span>
+                                    </div>
+                                </flux:table.cell>
+                            @endif
 
-                            {{-- Vehicle Specs (Brand & Model disatukan biar compact & clean) --}}
+                            {{-- Vehicle Specs --}}
                             <flux:table.cell class="w-52">
                                 <div class="flex flex-col">
                                     <span class="font-extrabold text-zinc-900 dark:text-zinc-100 text-sm tracking-tight">
@@ -119,7 +136,7 @@ new class extends Component
                                 </div>
                             </flux:table.cell>
 
-                            {{-- Plate Number (Didesain eksklusif mirip plat kendaraan asli) --}}
+                            {{-- Plate Number --}}
                             <flux:table.cell class="w-44 whitespace-nowrap">
                                 <span class="inline-block bg-zinc-100 dark:bg-zinc-800/80 text-zinc-900 dark:text-zinc-100 border border-zinc-300 dark:border-zinc-700 px-3 py-1 rounded-md font-mono font-black tracking-widest text-xs uppercase shadow-2xs">
                                     {{ $motorcycle->plate_number ?? 'N/A' }}

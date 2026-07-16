@@ -15,6 +15,7 @@ new class extends Component
     public BookingForm $form;
     public $users = [];
     public $motorcycles = [];
+    public $mechanics = []; // 🌟 Variabel baru untuk menampung daftar mekanik
     public $services = [];
     public $spareparts = [];
 
@@ -30,6 +31,11 @@ new class extends Component
         $this->motorcycles = Motorcycle::select('id', 'brand', 'model', 'plate_number')->get();
         $this->services = Service::select('id', 'service_name', 'service_price')->get();
         $this->spareparts = Sparepart::select('id', 'part_name', 'price', 'stock')->get();
+        
+        // 🌟 Mengambil user yang memiliki role 'mekanik' atau 'mechanic'
+        $this->mechanics = User::whereIn('role', ['mekanik', 'mechanic'])
+                               ->select('id', 'name', 'email')
+                               ->get();
     }
 
     public function addService()
@@ -148,8 +154,20 @@ new class extends Component
 
                 <flux:select label="Status" wire:model="form.status">
                     <flux:select.option value="pending">Pending</flux:select.option>
-                    <flux:select.option value="approved">Approved</flux:select.option>
+                    <flux:select.option value="processing">Mekanik Bekerja</flux:select.option> <!-- 🌟 Status Baru -->
+                    <flux:select.option value="completed">Servis Selesai</flux:select.option>   <!-- 🌟 Status Baru -->
+                    <flux:select.option value="approved">Approved / Lunas</flux:select.option>
                     <flux:select.option value="rejected">Rejected</flux:select.option>
+                </flux:select>
+
+                {{-- 🌟 FITUR BARU: Dropdown Penugasan Mekanik oleh Admin --}}
+                <flux:select label="Tugaskan Mekanik" wire:model="form.mechanic_id">
+                    <flux:select.option value="">Belum Ditugaskan / Pilih Mekanik</flux:select.option>
+                    @foreach($mechanics as $mechanic)
+                        <flux:select.option value="{{ $mechanic->id }}">
+                            {{ $mechanic->name }}
+                        </flux:select.option>
+                    @endforeach
                 </flux:select>
 
                 <flux:separator variant="subtle" />
